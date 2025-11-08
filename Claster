@@ -1,52 +1,166 @@
-import numpy as np
-import math
-import pandas as pd
+import numpy
+import random
+import tkinter as tk
+from tkinter import Canvas
 import matplotlib.pyplot as plt
+import math
 
-def kospirs(x, y):
-    x_norm = math.pow(np.dot(x.T, x), 0.5)
-    y_norm = math.pow(np.dot(y.T, y), 0.5)
-    return np.dot(x.T, y) / (x_norm * y_norm) 
+def getdatarazm():
+    global numtoch
+    line={}
+    with open("input.txt", "r") as f:
+        numtoch = len(f.readlines())
+    f.close()
+getdatarazm()
 
-x = np.array([0, 1, 2, 3])
-y_matrix = np.zeros((100, 4))
-kos = np.zeros(100)
+numkl = int(input('Введите количество кластеров: '))
+numx = 4
+xklt = [0]*(numkl+1)
+yklt = [0]*(numkl+1)
+zklt = [0]*(numkl+1)
+rklt = [0]*(numkl+1)
+inputx=numpy.zeros((numtoch, numx))
+clas = [0]*numtoch
+clasb = [0]*numtoch
+xkl = [0]*(numkl+1)
+ykl = [0]*(numkl+1)
+zkl = [0]*(numkl+1)
+rkl = [0]*(numkl+1)
+xt=[0]*numtoch
+yt=[0]*numtoch
+zt=[0]*numtoch
 
-k = 0
-for i in range(-50,0):
-    for j in range(0, 4):
-        y_matrix[k][j] = x[j] + i
-    k += 1
+def getdata():
+    global numgen
+    line = {}
+    with open("input.txt", "r") as f:
+        for i in range(numtoch):
+            line[i] = f.readline()
+            stroka = line[i].split(' ')
+            for j in range(numx):
+                inputx[i][j] = int(stroka[j])
+getdata()
 
-for i in range(1,51):
-    for j in range(0, 4):
-        y_matrix[k][j] = x[j] + i
-    k += 1
+maxx = 0
+maxy = 0
+maxz = 0
+minx = 10**10
+miny = 10**10
+minz = 10**10
+for i in range(numtoch):
+    if inputx[i][0] >= maxx: maxx = inputx[i][0]
+    if inputx[i][1] >= maxy: maxy = inputx[i][1]
+    if inputx[i][2] >= maxz: maxz = inputx[i][2]
+    if inputx[i][0] <= minx: minx = inputx[i][0]
+    if inputx[i][1] <= miny: miny = inputx[i][1]
+    if inputx[i][2] <= minz: minz = inputx[i][2]
 
-kos = np.zeros(100)
-for i in range(100):
-    kos[i] = kospirs(x, y_matrix[i])
-
-
-pirs = np.zeros(100)
-for i in range(100):
+def fit():
     s = 0
-    for j in range(4):
-        s+=y_matrix[i][j]
-    s /= 4
-    for j in range(4):
-        y_matrix[i][j] -= s
-    pirs[i] = kospirs(x, y_matrix[i])
+    for i in range(numtoch):
+        a = xklt[clas[i]]
+        b = yklt[clas[i]]
+        c = yklt[clas[i]]
+        x = inputx[i][0]
+        y = inputx[i][1]
+        z = inputx[i][2]
+        ves = inputx[i][3]
+        rast = int(math.sqrt((x - a) ** 2 + (y - b) ** 2 + (z - c) ** 2)*ves/100)
+        s = s + rast
+    return s
 
-y = np.zeros(100)
-for i in range(-50, 51):
-    if i < 0:
-        y[i+50] = i
-    elif i > 0:
-        y[i+49] = i
-plt.plot(y, kos, color='red', label='Cos')
-plt.plot(y, pirs, color='green', label='Pirs')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.legend()
-plt.show()
+def maxrast(kl):
+    s = 0
+
+    a = xklt[kl]
+    b = yklt[kl]
+    c = yklt[kl]
+
+    for i in range(numtoch):
+        if clas[i] == kl:
+            x = inputx[i][0]
+            y = inputx[i][1]
+            z = inputx[i][1]
+            rast = math.sqrt((x - a) ** 2 + (y - b) ** 2 + (z - c) ** 2)
+
+            if (rast > s): s = rast
+    return s
+
+ep1 = int(input("Введите количество эпох поиск по точкам множества: "))
+ep2 = int(input("Введите количество эпох грубый поиск: "))
+ep3 = int(input("Введите количество эпох точный поиск: "))
+minf = 100000000000000
+
+for ki in range(ep1+ep2+ep3*numkl):
+    if (ki%100000==0): print("Эпоха: ", ki)
+    for j in range (1, numkl+1):
+        if(ki<ep1):
+            nn=random.randint(0, numtoch-1)
+            xklt[j]=inputx[nn][0]
+            yklt[j]=inputx[nn][1]
+            yklt[j]=inputx[nn][2]
+        if(ki<ep1+ep2) and (ki>=ep1):
+            xklt[j] = random.randint(int(minx), int(maxx))
+            yklt[j] = random.randint(int(miny), int(maxy))
+            zklt[j] = random.randint(int(minz), int(maxz))
+        if(ki>=ep1+ep2):
+            nkl = (ki-ep2+ep1)//ep3
+            if j == nkl:
+                xklt[j] = xkl[j]+rkl[j]-random.randint(0,2*int(rkl[j]))
+                if(xklt[j]<0): xklt[j]=0
+                if(xklt[j]>maxx): xklt[j]=maxx
+                yklt[j] = ykl[j]+rkl[j]-random.randint(0,2*int(rkl[j]))
+                if(yklt[j]<0): yklt[j]=0
+                if(yklt[j]>maxy): yklt[j]=maxy
+                zklt[j] = zkl[j]+rkl[j]-random.randint(0,2*int(rkl[j]))
+                if(zklt[j]<0): zklt[j]=0
+                if(zklt[j]>maxz): zklt[j]=maxz
+            if j != nkl:
+                xklt[j] = xkl[j]
+                yklt[j] = ykl[j]
+                zklt[j] = zkl[j]
+
+    for l in range(numtoch):
+        rs = 1000000000
+        for j in range(1, numkl+1):
+            a = xklt[j]
+            b = yklt[j]
+            c = yklt[j]
+            x = inputx[l][0]
+            y = inputx[l][1]
+            z = inputx[l][2]
+            rast = (x-a)**2+(y-b)**2+(z-c)**2
+            if rast < rs:
+                rs = rast
+                clas[l] = j
+                
+    fitz = fit()
+    
+    if (fitz < minf):
+        minf = fitz
+        print("Эпоха", ki)
+        print('Произошло улучшение значения фитнесс-функции:', int(minf))
+        for j in range(1,numkl+1):
+            xkl[j] = xklt[j]
+            ykl[j] = yklt[j]
+            zkl[j] = zklt[j]
+            rkl[j] = int(maxrast(j))
+        for l in range(numtoch):
+            clasb[l] = clas[l]
+
+for i in range(1, numkl+1):
+    print("Кластер ", i)
+    print("Координата x: ", xkl[i], "Координата y: ", ykl[i], "Координата z: ", zkl[i], "Размер: ", rkl[i])
+print(clasb)
+
+fig = plt.figure()
+
+ax = fig.add_subplot(111, projection='3d')
+
+ax.scatter(xkl,ykl,zkl)
+for i in range(numtoch):
+    xt[i] = inputx[i][0]
+    yt[i] = inputx[i][1]
+    zt[i] = inputx[i][2]
+ax.scatter(xkl,ykl,zkl)
+ax.scatter(xt,yt,zt)
