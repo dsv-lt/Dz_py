@@ -1,0 +1,52 @@
+import numpy as np
+import math
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def kospirs(x, y):
+    x_norm = math.pow(np.dot(x.T, x), 0.5)
+    y_norm = math.pow(np.dot(y.T, y), 0.5)
+    return np.dot(x.T, y) / (x_norm * y_norm) 
+
+x = np.array([0, 1, 2, 3])
+y_matrix = np.zeros((100, 4))
+kos = np.zeros(100)
+
+k = 0
+for i in range(-50,0):
+    for j in range(0, 4):
+        y_matrix[k][j] = x[j] + i
+    k += 1
+
+for i in range(1,51):
+    for j in range(0, 4):
+        y_matrix[k][j] = x[j] + i
+    k += 1
+
+kos = np.zeros(100)
+for i in range(100):
+    kos[i] = kospirs(x, y_matrix[i])
+
+
+pirs = np.zeros(100)
+for i in range(100):
+    s = 0
+    for j in range(4):
+        s+=y_matrix[i][j]
+    s /= 4
+    for j in range(4):
+        y_matrix[i][j] -= s
+    pirs[i] = kospirs(x, y_matrix[i])
+
+y = np.zeros(100)
+for i in range(-50, 51):
+    if i < 0:
+        y[i+50] = i
+    elif i > 0:
+        y[i+49] = i
+plt.plot(y, kos, color='red', label='Cos')
+plt.plot(y, pirs, color='green', label='Pirs')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.show()
