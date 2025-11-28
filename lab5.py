@@ -36,7 +36,7 @@ def my_eig_2x2(matrix):
         vecs.append(v)
     return np.array(vals), np.array(vecs).T
 # проверка
-print("=== ЛАБОРАТОРНАЯ 5 ===")
+print("\nlab_5")
 n = 4
 A = np.random.randint(-5, 5, (n, n))
 print(f"Матрица A ({n}x{n}):\n{A}")
@@ -53,4 +53,5 @@ val_np, vec_np = np.linalg.eig(A2)
 print(f"Мои собств. значения: {val_my}")
 print(f"NumPy собств. значения: {val_np}")
 print(f"Мои собств. вектора:\n{vec_my}")
+
 print(f"NumPy собств. вектора:\n{vec_np}")
