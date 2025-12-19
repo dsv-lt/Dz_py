@@ -55,3 +55,27 @@ print(f"NumPy собств. значения: {val_np}")
 print(f"Мои собств. вектора:\n{vec_my}")
 
 print(f"NumPy собств. вектора:\n{vec_np}")
+
+import numpy as np
+def determinant(matrix):
+    """Вычисление определителя методом разложения по первой строке"""
+    n = matrix.shape[0]
+    if n == 1:
+        return matrix[0, 0]
+    if n == 2:
+        return matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0]
+    det = 0
+    for j in range(n):
+        minor = np.delete(np.delete(matrix, 0, axis=0), j, axis=1)
+        cofactor = ((-1) ** j) * matrix[0, j] * determinant(minor)
+        det += cofactor
+    return det
+n = int(input("Введите размерность матрицы: "))
+A = np.random.randint(-10, 10, (n, n)).astype(float)
+print("Матрица A:")
+print(A)
+my_det = determinant(A)
+numpy_det = np.linalg.det(A)
+print(f"\nМой определитель: {my_det}")
+print(f"NumPy определитель: {numpy_det}")
+print(f"Разница: {abs(my_det - numpy_det)}")
