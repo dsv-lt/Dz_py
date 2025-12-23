@@ -206,3 +206,7 @@ df_warehouse['прибыль'] = df_warehouse['доход'] - df_warehouse['се
 print("\nДатафрейм с полным расчетом:")
 print(df_warehouse)
 print(f"\nОбщая прибыль: {df_warehouse['прибыль'].sum()} руб.")
+
+https://gist.github.com/reuven/a0bded849e5925f46ff44686d6f7383e
+
+https://gist.github.com/reuven/5d0523fb7a18abcde6f3efcb0bc26f17
