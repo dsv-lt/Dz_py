@@ -1,3 +1,5 @@
+# !pip install ydata-profiling missingno - в отдельной ячейке, если выполнять код в Colab
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
