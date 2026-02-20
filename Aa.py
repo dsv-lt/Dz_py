@@ -4,9 +4,7 @@ import math
 def bisection_table(f, a, b, eps=0.0001):
     k = 0
 
-    print("{:<3} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12} {:<12}".format(
-        "k", "a", "b", "c", "f(a)", "f(b)", "f(c)", "|b-a|"
-    ))
+    print("k   a          b          c          f(a)       f(b)       f(c)       |b-a|")
 
     while abs(b - a) >= eps:
         c = round((a + b) / 2.0, 6)
@@ -17,9 +15,7 @@ def bisection_table(f, a, b, eps=0.0001):
 
         diff = round(abs(b - a), 6)
 
-        print("{:<3} {:<12.6f} {:<12.6f} {:<12.6f} {:<12} {:<12} {:<12} {:<12}".format(
-            k, a, b, c, fa, fb, fc, diff
-        ))
+        print(k, a, b, c, fa, fb, fc, diff)
 
         if fa * fc < 0:
             b = c
@@ -44,7 +40,7 @@ print("Уравнение 1")
 
 root1 = bisection_table(f1, -2.0, -1.0)
 print("Ответ:", root1)
-print("Второй корень: 0.000000")
+print("Второй корень:", 0.0)
 
 
 # ===============================
@@ -56,7 +52,8 @@ def f2(x):
     return x**3 + 0.2 * x**2 + 0.5 * x + 0.8
 
 
-print("\nУравнение 2")
+print()
+print("Уравнение 2")
 
 root2 = bisection_table(f2, -1.0, 0.0)
 print("Ответ:", root2)
